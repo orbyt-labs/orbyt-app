@@ -1,3 +1,29 @@
+def getPassword(String currentUser, String keyChain) {
+	def stdout = new ByteArrayOutputStream()
+	def stderr = new ByteArrayOutputStream()
+	if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+		exec {
+			commandLine 'security', '-q', 'find-generic-password', '-a', currentUser, '-s', keyChain, '-w'
+			standardOutput = stdout
+			errorOutput = stderr
+			ignoreExitValue true
+		}
+	} else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+		exec {
+			// In order for this to work you need to store it:
+			// secret-tool store --label='mm' server mm user mm key mm-upload-key
+			commandLine 'secret-tool', 'lookup', 'server', currentUser, 'user', currentUser, 'key', keyChain
+			standardOutput = stdout
+			errorOutput = stderr
+			ignoreExitValue true
+		}
+	} else {
+		throw new GradleException('Unsupported OS! Only MacOSx and Linux are supported')
+	}
+	//noinspection GroovyAssignabilityCheck
+	stdout.toString().trim()
+}
+
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
@@ -91,7 +117,7 @@ apply from: "../../node_modules/react-native/react.gradle"
  * Upload all the APKs to the Play Store and people will download
  * the correct one based on the CPU architecture of their device.
  */
-def enableSeparateBuildPerCPUArchitecture = false
+def enableSeparateBuildPerCPUArchitecture = true
 
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
@@ -130,12 +156,34 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
     defaultConfig {
         applicationId "seni.tembe.orbyt"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+		minSdkVersion rootProject.ext.minSdkVersion
+		targetSdkVersion rootProject.ext.targetSdkVersion
+		versionCode 801
+		versionName "3.8.0"
+		multiDexEnabled true
+		testBuildType System.getProperty('testBuildType', 'debug')
+		missingDimensionStrategy "minReactNative", "minReactNative46"
+		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+		ndk {
+			abiFilters "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+		}
+		dexOptions {
+			javaMaxHeapSize "2048M"
+		}
+
+		manifestPlaceholders = [
+			MM_BRANCH_KEY_TEST: "$System.env.MM_BRANCH_KEY_TEST",
+			MM_BRANCH_KEY_LIVE: "$System.env.MM_BRANCH_KEY_LIVE",
+			MM_MIXPANEL_TOKEN: "$System.env.MM_MIXPANEL_TOKEN"
+		]
+		missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
         abi {
@@ -155,19 +203,19 @@ android {
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
-            if (nativeArchitectures) {
-                ndk {
-                    abiFilters nativeArchitectures.split(',')
-                }
-            }
+            manifestPlaceholders = [isDebug:true]
+			signingConfig signingConfigs.debug
+			multiDexEnabled true
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            manifestPlaceholders = [isDebug:false]
+			minifyEnabled true
+			multiDexEnabled true
+			shrinkResources true
+			proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+			signingConfig signingConfigs.release
         }
     }
 
@@ -191,9 +239,26 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:+"  // From node_modules
-
+    implementation project(':lottie-react-native')
+	implementation project(':react-native-gesture-handler')
+    implementation 'androidx.multidex:multidex:2.0.1'
+	implementation 'androidx.annotation:annotation:1.1.0'
+	implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation project(':ReactAndroid')
+    implementation 'org.chromium:v8-android:+'
+	implementation 'com.google.android.gms:play-services-wallet:18.0.0'
+	implementation "io.branch.sdk.android:library:5.+"
+	implementation 'com.mixpanel.android:mixpanel-android:5.+'
+	androidTestImplementation('com.wix:detox:+') { transitive = true }
+	androidTestImplementation 'junit:junit:4.12'
+	implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+	implementation "com.squareup.okhttp3:okhttp:4.9.1"
+	implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
+	implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.1"
+    //implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
