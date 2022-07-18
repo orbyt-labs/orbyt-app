@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 
 export const OnboardingButton = ({
     color,
@@ -14,20 +15,21 @@ export const OnboardingButton = ({
         <TouchableOpacity
             style={{
                 margin: 5,
-                minWidth: 150,
                 backgroundColor: color,
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 alignItems: 'center',
+                minHeight: 150,
+                width: '45%',
                 padding: 10,
                 borderRadius: 10
             }}
-            onPress={onPress}
-        >
+            onPress={onPress}>
             <View>
                 <Text
                     style={{
                         color: 'white',
+                        fontSize: 11,
                         fontFamily: 'SF-Pro-Rounded-Heavy'
                     }}
                 >

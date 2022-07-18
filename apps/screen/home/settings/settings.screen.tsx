@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, } from 'react-native';
 import { container } from '../../../style/container.style';
 import Card from '../../../components/card';
-import { DefaultButton as Button } from '../../../components/button/defaultButton/default.button';
+import { DefaultButton as Button } from '../../../components/onboarding/button/defaultButton/default.button';
 import WalletAction from '../../../redux/actions/wallet.action';
 import { connect } from 'react-redux';
 import { colors } from '../../../constants';

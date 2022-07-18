@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Animated } from 'react-native';
 import { container } from '../../style/container.style';
-import { OnboardingButton as Button } from '../../components/button';
+import { OnboardingButton as Button } from '../../components/onboarding/button';
 import { connect } from 'react-redux';
 import WalletAction from '../../redux/actions/wallet.action';
 import { colors } from '../../constants/index';
@@ -9,9 +9,18 @@ import { colors } from '../../constants/index';
 const Onboarding = (props: any) => {
     const { connected, navigation, error } = props;
     const { connectWallet } = WalletAction(props);
+    
     //animations
     const progress = React.useRef(new Animated.Value(0)).current;
     const scale = React.useRef(new Animated.Value(0)).current;
+
+    const createNewWallet = React.useCallback(() => {
+        navigation.navigate('Create');
+    },[]);
+    
+    const importWallet = React.useCallback(() => {
+        navigation.navigate('Import');
+    },[]);
 
     React.useEffect(() => {
         Animated.timing(progress, {
@@ -30,7 +39,8 @@ const Onboarding = (props: any) => {
     }, [error]);
 
     return (
-        <View style={container.onboarding}>
+        <View 
+            style={container.onboarding}>
             <View>
                 <Animated.Text
                     style={[
@@ -65,12 +75,12 @@ const Onboarding = (props: any) => {
             </View>
             <View
                 style={{
-                    marginTop: 40,
                     width: '90%',
                     flex: 1,
+                    padding: 10,
                     flexDirection: 'row',
                     display: 'flex',
-                    flexWrap: 'wrap'
+                    justifyContent: 'space-between'
                 }}
             >
                 <Button
@@ -80,13 +90,23 @@ const Onboarding = (props: any) => {
                 />
                 <Button
                     color={'#39B54A'}
-                    onPress={() => {}}
+                    onPress={() => createNewWallet()}
                     text={'CREATE NEW WALLET'}
                 />
+            </View>
+            <View
+                style={{
+                    width: '90%',
+                    flex: 1,
+                    padding: 10,
+                    flexDirection: 'row',
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                }}>
                 <Button
                     color={'#F15A24'}
-                    onPress={() => {}}
-                    text="IMPORT WALLET"
+                    onPress={() => importWallet()}
+                    text={'IMPORT WALLET'}
                 />
             </View>
         </View>

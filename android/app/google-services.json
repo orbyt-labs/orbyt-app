@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "397532245873",
+    "project_id": "pc-api-7258676217730941088-973",
+    "storage_bucket": "pc-api-7258676217730941088-973.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:397532245873:android:19160e9f037f38bef090d0",
+        "android_client_info": {
+          "package_name": "seni.tembe.orbyt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "397532245873-bv4sctbrkbkqdn0k7rv0ffuu2qg636co.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "seni.tembe.orbyt",
+            "certificate_hash": "6005d30f676b3ac7b1166600385af8a79da81a0d"
+          }
+        },
+        {
+          "client_id": "397532245873-m92vch40odjl4g80c63dsknbuuq1nt25.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIX3ns_H846cK1Pplicq9PPncthSL-Neo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "397532245873-m92vch40odjl4g80c63dsknbuuq1nt25.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
